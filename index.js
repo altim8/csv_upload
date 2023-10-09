@@ -1,24 +1,14 @@
-const express = require('express');
-const db = require('./config/mongoose');
+const express = require("express");
+const multer = require("multer");
+const router = express.Router();
+const upload = multer({ dest: "uploads/" });
 
-const env = require('dotenv').config();
+const homeController = require("../controllers/homeController");
+const uploadController = require('../controllers/uploadController');
 
-const path = require('path');
-const multer = require('multer')
-const app = express();
-app.use(express.urlencoded({ extended: false }));
-const assetsPath = path.join(__dirname, 'assets');
-app.use('/assets', express.static(assetsPath));
+router.get("/", homeController.home);
+router.post("/upload", upload.single("file"), homeController.upload);
+router.get('/view/:fileId', uploadController.view)
+router.get('/delete/:fileId', uploadController.delete)
 
-app.set('view engine', 'ejs');
-app.set('views', './views');
-
-app.use('/', require('./routes'));
-
-app.listen(8000, (err) => {
-    if (err) {
-        console.log("Error Connecting to server!!");
-        return;
-    }
-    console.log("Successfully Connected to Server, 8000!!");
-});
+module.exports = router;
